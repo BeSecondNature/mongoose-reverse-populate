@@ -10,7 +10,7 @@ You can use a standard populate call if you wish to retrieve all Posts and popul
 ## Using the function
 
 ```js
-const reversePopulate = require("mongoose-reverse-populate");
+import { reversePopulate } from "mongoose-promises-reverse-populate";
 
 // The next step requires access to the 'Author' and 'Post' mongoose model
 
