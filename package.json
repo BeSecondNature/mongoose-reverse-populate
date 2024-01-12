@@ -1,32 +1,42 @@
 {
   "name": "mongoose-reverse-populate",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "This module allows you to 'populate' a mongoose model where the relationship ids are stored on another mongoose model that is related to this model",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -R spec --recursive"
+    "test": "npm run build && ts-mocha test/**/*.test.ts --exit",
+    "lint": "eslint src/**/* test/**/*",
+    "prettier": "prettier . --check",
+    "typescript": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Prismatik/mongoose-reverse-populate.git"
+    "url": "git://github.com/BeSecondNature/mongoose-reverse-populate.git"
   },
   "keywords": [
     "mongo",
     "mongoose",
     "populate"
   ],
-  "author": "Simon Taylor",
+  "author": "Second Nature",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Prismatik/mongoose-reverse-populate/issues"
+    "url": "https://github.com/BeSecondNature/mongoose-reverse-populate/issues"
   },
-  "homepage": "https://github.com/Prismatik/mongoose-reverse-populate",
+  "homepage": "https://github.com/BeSecondNature/mongoose-reverse-populate",
   "devDependencies": {
-    "mongoose": "^7.6.8",
-    "mocha": "^2.2.1"
+    "@types/mocha": "^10.0.6",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
+    "mocha": "^10.2.0",
+    "prettier": "3.1.1",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
-    "lodash": "^3.10.0"
+    "mongoose": "^7.6.8"
   },
   "engines": {
     "node": ">= 18"

@@ -9,35 +9,32 @@ You can use a standard populate call if you wish to retrieve all Posts and popul
 
 ## Using the function
 
-```
-var reversePopulate = require('mongoose-reverse-populate');
+```js
+const reversePopulate = require("mongoose-reverse-populate");
 
-//the next step requires access to the 'Author' and 'Post' mongoose model
+// The next step requires access to the 'Author' and 'Post' mongoose model
 
-Author.find().exec(function(err, authors) {
+const authors = await Author.find();
 
-    var opts = {
-        modelArray: authors,
-        storeWhere: "posts",
-        arrayPop: true,
-        mongooseModel: Post,
-        idField: "author"
-    }
+const options = {
+  modelArray: authors,
+  storeWhere: "posts",
+  arrayPop: true,
+  mongooseModel: Post,
+  idField: "author",
+};
 
-
-	const popAuthors = await reversePopulate(opts);
-    // popAuthors will be populated with posts under .posts property
-});
-
+const popAuthors = await reversePopulate(options);
+// popAuthors will be populated with posts under .posts property
 ```
 
 ## Inputs
 
-The function expects an opts object (options)
+The function expects an options object
 
-function(opts) {...}
+function(options) {...}
 
-#### opts
+#### options
 
 The options object should contain the following properties...
 
