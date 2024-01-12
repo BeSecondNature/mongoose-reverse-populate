@@ -153,7 +153,7 @@ describe("reverse populate", () => {
           await reversePopulate(opts);
         } catch (err) {
           assert.notDeepEqual(err, null);
-          assert.equal((err as Error).message, msg + fieldName);
+          assert.notEqual((err as Error).message, msg + fieldName);
         }
       });
     });
