@@ -110,7 +110,7 @@ interface Options<
           path: string;
           select: string;
         };
-      }
+      }[]
     | string[];
   select?: string;
 }
