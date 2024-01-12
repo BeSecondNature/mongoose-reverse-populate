@@ -289,6 +289,7 @@ describe("reverse populate", () => {
       author.posts.forEach((post) => {
         assert.equal(post.categories.length, 2);
         post.categories.forEach((category) => {
+          // @ts-expect-error category has been populated, but reversePopulate is not yet typed to reflect this
           assert.equal(typeof category.name, "string");
         });
         idsMatch(post.categories, categories);
