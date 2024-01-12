@@ -5,10 +5,10 @@ function checkRequired<
   TopLevelDocument,
   NestedDocument,
   StoreWhere extends string,
-  ArrayPop extends boolean
+  ArrayPop extends boolean,
 >(
   required: typeof REQUIRED_FIELDS,
-  options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>
+  options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>,
 ): void {
   required.forEach((fieldName) => {
     if (options[fieldName] == null)
@@ -21,7 +21,7 @@ function buildQuery<
   TopLevelDocument,
   NestedDocument,
   StoreWhere extends string,
-  ArrayPop extends boolean
+  ArrayPop extends boolean,
 >(options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>) {
   // @ts-expect-error _id is a mandatory field on mongoose documents
   const ids = options.modelArray.map((model) => model._id);
@@ -62,7 +62,7 @@ function populateResult<TopLevelDocument, NestedDocument>(
   storeWhere: string,
   arrayPop: boolean,
   match: TopLevelDocument,
-  result: NestedDocument
+  result: NestedDocument,
 ): void {
   if (arrayPop) {
     // @ts-expect-error TypeScript doesn't like dynamic property access
@@ -81,7 +81,7 @@ function populateResult<TopLevelDocument, NestedDocument>(
 
 function createPopulateResult<TopLevelDocument, NestedDocument>(
   storeWhere: string,
-  arrayPop: boolean
+  arrayPop: boolean,
 ): (match: TopLevelDocument, result: NestedDocument) => void {
   // Return a function that only requires the remaining two parameters
   return function (match, result) {
@@ -93,7 +93,7 @@ interface Options<
   TopLevelDocument,
   NestedDocument,
   StoreWhere extends string,
-  ArrayPop extends boolean
+  ArrayPop extends boolean,
 > {
   modelArray: TopLevelDocument[];
   storeWhere: StoreWhere;
@@ -127,9 +127,9 @@ export async function reversePopulate<
   TopLevelDocument,
   NestedDocument,
   StoreWhere extends string,
-  ArrayPop extends boolean
+  ArrayPop extends boolean,
 >(
-  options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>
+  options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>,
 ): Promise<
   ArrayPop extends true
     ? (TopLevelDocument & { [key in StoreWhere]: NestedDocument[] })[]

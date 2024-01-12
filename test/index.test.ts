@@ -389,10 +389,10 @@ describe("reverse populate", () => {
 // compare an array of mongoose objects
 const idsMatch = <
   T extends Record<"_id", Types.ObjectId>,
-  K extends Record<"_id", Types.ObjectId>
+  K extends Record<"_id", Types.ObjectId>,
 >(
   arr1: T[],
-  arr2: K[]
+  arr2: K[],
 ) => {
   assert.equal(arr1.length, arr2.length);
 
@@ -409,10 +409,10 @@ const pluckIds = <T extends Record<string, Types.ObjectId>>(array: T[]) =>
 // compare two mongoose objects using _id
 const idMatch = <
   T extends Record<"_id", Types.ObjectId>,
-  K extends Record<"_id", Types.ObjectId>
+  K extends Record<"_id", Types.ObjectId>,
 >(
   obj1: T,
-  obj2: K
+  obj2: K,
 ) => {
   const compare = obj1._id.equals(obj2._id);
   assert(compare);
