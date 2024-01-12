@@ -8,7 +8,12 @@ function checkRequired<
   ArrayPop extends boolean,
 >(
   required: typeof REQUIRED_FIELDS,
-  options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>,
+  options: ReversePopulateOptions<
+    TopLevelDocument,
+    NestedDocument,
+    StoreWhere,
+    ArrayPop
+  >,
 ): void {
   required.forEach((fieldName) => {
     if (options[fieldName] == null)
@@ -22,7 +27,14 @@ function buildQuery<
   NestedDocument,
   StoreWhere extends string,
   ArrayPop extends boolean,
->(options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>) {
+>(
+  options: ReversePopulateOptions<
+    TopLevelDocument,
+    NestedDocument,
+    StoreWhere,
+    ArrayPop
+  >,
+) {
   // @ts-expect-error _id is a mandatory field on mongoose documents
   const ids = options.modelArray.map((model) => model._id);
 
@@ -89,7 +101,7 @@ function createPopulateResult<TopLevelDocument, NestedDocument>(
   };
 }
 
-interface Options<
+export interface ReversePopulateOptions<
   TopLevelDocument,
   NestedDocument,
   StoreWhere extends string,
@@ -129,7 +141,12 @@ export async function reversePopulate<
   StoreWhere extends string,
   ArrayPop extends boolean,
 >(
-  options: Options<TopLevelDocument, NestedDocument, StoreWhere, ArrayPop>,
+  options: ReversePopulateOptions<
+    TopLevelDocument,
+    NestedDocument,
+    StoreWhere,
+    ArrayPop
+  >,
 ): Promise<
   ArrayPop extends true
     ? (TopLevelDocument & { [key in StoreWhere]: NestedDocument[] })[]
