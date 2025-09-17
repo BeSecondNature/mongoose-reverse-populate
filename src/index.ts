@@ -59,7 +59,7 @@ function buildQuery<
   if (options.sort) {
     query.sort(options.sort);
   }
-  if (options.lean) {
+  if (options.lean === true) {
     query.lean();
   }
   return query;
@@ -86,8 +86,11 @@ function populateResult<TopLevelDocument, NestedDocument>(
       match[storeWhere] = [];
     }
 
+    // Debug log
+    // console.log("Before push, result type:", (result as any).constructor?.name);
     // @ts-expect-error TypeScript doesn't like dynamic property access
     match[storeWhere].push(result);
+    // console.log("After push, stored type:", (match[storeWhere][0] as any).constructor?.name);
   } else {
     // @ts-expect-error TypeScript doesn't like dynamic property access
     match[storeWhere] = result;
@@ -106,7 +109,7 @@ function createPopulateResult<TopLevelDocument, NestedDocument>(
 
 /**
  * Options for reverse populating Mongoose documents.
- * 
+ *
  * @template TopLevelDocument - The type of documents in the modelArray
  * @template NestedDocument - The type of documents being populated
  * @template StoreWhere - The property name where populated documents will be stored
@@ -120,25 +123,25 @@ export interface ReversePopulateOptions<
 > {
   /** Array of documents to populate with related documents */
   modelArray: TopLevelDocument[];
-  
+
   /** Property name where the populated documents will be stored */
   storeWhere: StoreWhere;
-  
+
   /** If true, stores populated documents as array; if false, as single value */
   arrayPop: ArrayPop;
-  
+
   /** Mongoose model to query for related documents */
   mongooseModel: Model<NestedDocument>;
-  
+
   /** Field in the related documents that contains the reference ID */
   idField: keyof NestedDocument;
-  
+
   /** Optional MongoDB query filters for the related documents */
   filters?: FilterQuery<NestedDocument>;
-  
+
   /** Optional sort criteria for the related documents */
   sort?: string;
-  
+
   /** Optional populate configuration for nested relationships */
   populate?:
     | {
@@ -150,11 +153,11 @@ export interface ReversePopulateOptions<
         };
       }[]
     | string[];
-  
+
   /** Optional field selection for the related documents */
   select?: string;
-  
-  /** 
+
+  /**
    * If true, returns related documents as plain JavaScript objects instead of Mongoose documents.
    * This improves performance and reduces memory usage. Default: false.
    */
@@ -171,18 +174,18 @@ const REQUIRED_FIELDS = [
 
 /**
  * Populates documents with related documents where the reference is stored on the related model.
- * 
+ *
  * This function solves the "reverse populate" problem in Mongoose, where you need to populate
  * a model with documents that reference it, but the reference is stored on the other model.
- * 
+ *
  * @template TopLevelDocument - The type of documents to populate
  * @template NestedDocument - The type of related documents
  * @template StoreWhere - The property name where populated documents will be stored
  * @template ArrayPop - Whether to store as array (true) or single value (false)
- * 
+ *
  * @param options - Configuration options for the reverse populate operation
  * @returns Promise resolving to the populated documents
- * 
+ *
  * @example
  * ```typescript
  * const authors = await Author.find();
@@ -241,6 +244,10 @@ export async function reversePopulate<
 
   // Do the query
   const documents = await query.exec();
+
+  // Debug: Check document type
+  // console.log("Document type from query:", documents[0]?.constructor?.name);
+  // console.log("Lean option:", options.lean);
 
   // Map over results (models to be populated)
   documents.forEach((document) => {
