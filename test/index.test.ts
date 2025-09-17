@@ -295,6 +295,39 @@ describe("reverse populate", () => {
         idsMatch(post.categories, categories);
       });
     });
+
+    // test that lean option returns plain JavaScript objects for related documents
+    it("should return lean documents when lean option is true", async () => {
+      const opts = {
+        modelArray: authors,
+        storeWhere: "posts" as const,
+        arrayPop: true as const,
+        mongooseModel: Post,
+        idField: "author" as const,
+        lean: true,
+      };
+      const authResult = await reversePopulate(opts);
+      assert.equal(authResult.length, 1);
+      idsMatch(authResult, authors);
+
+      const author = authResult[0];
+      assert.equal(author.posts.length, 5);
+
+      // Verify that posts are plain objects (lean documents)
+      author.posts.forEach((post) => {
+        // Lean documents should be plain objects without Mongoose document methods
+        assert.equal(post.constructor.name, "Object");
+        // Verify the post still has the expected properties
+        assert.notEqual(typeof post.title, "undefined");
+        assert.notEqual(typeof post.author, "undefined");
+        assert.notEqual(typeof post.content, "undefined");
+        // Check that it doesn't have Mongoose document methods
+        // @ts-expect-error These methods don't exist on the PostData interface but would on Mongoose documents
+        assert.equal(typeof post.save, "undefined");
+        // @ts-expect-error These methods don't exist on the PostData interface but would on Mongoose documents
+        assert.equal(typeof post.populate, "undefined");
+      });
+    });
   });
 
   describe("singular results", () => {

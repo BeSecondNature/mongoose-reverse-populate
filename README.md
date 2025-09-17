@@ -52,6 +52,7 @@ The options object should contain the following properties...
 - select (object / string) - restrict which fields are returned for your 'related models', see [Query#select](http://mongoosejs.com/docs/api.html#query_Query-select)
 - populate (object / string) - populate your 'related models' with their related models, see [Query#populate](http://mongoosejs.com/docs/api.html#query_Query-populate)
 - sort (object / string) - sort your 'related models', see [Query#sort](http://mongoosejs.com/docs/api.html#query_Query-sort)
+- lean (boolean) - if set to true, the 'related models' will be returned as plain JavaScript objects instead of Mongoose documents. This improves performance and reduces memory usage for large datasets. Note that the modelArray documents themselves are not affected by this option - only the populated related documents become lean. Default is false.
 
 ## Why is this needed?
 
