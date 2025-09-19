@@ -245,10 +245,6 @@ export async function reversePopulate<
   // Do the query
   const documents = await query.exec();
 
-  // Debug: Check document type
-  // console.log("Document type from query:", documents[0]?.constructor?.name);
-  // console.log("Lean option:", options.lean);
-
   // Map over results (models to be populated)
   documents.forEach((document) => {
     // Check if the ID field is an array
