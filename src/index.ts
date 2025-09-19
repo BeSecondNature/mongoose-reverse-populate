@@ -86,8 +86,6 @@ function populateResult<TopLevelDocument, NestedDocument>(
       match[storeWhere] = [];
     }
 
-    // Debug log
-    // console.log("Before push, result type:", (result as any).constructor?.name);
     // @ts-expect-error TypeScript doesn't like dynamic property access
     match[storeWhere].push(result);
     // console.log("After push, stored type:", (match[storeWhere][0] as any).constructor?.name);
