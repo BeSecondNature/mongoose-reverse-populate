@@ -198,6 +198,12 @@ describe("reverse populate", () => {
       authResult.forEach((author) => {
         idsMatch(author.posts, posts);
         assert.equal(author.posts.length, 5);
+
+        // Verify default behavior returns Mongoose documents with methods
+        // @ts-expect-error PostData interface doesn't include Mongoose methods
+        assert.equal(typeof author.posts[0].save, "function");
+        // @ts-expect-error PostData interface doesn't include Mongoose methods
+        assert.equal(typeof author.posts[0].populate, "function");
       });
     });
 
@@ -294,6 +300,132 @@ describe("reverse populate", () => {
         });
         idsMatch(post.categories, categories);
       });
+    });
+
+    it("should return lean documents when lean option is true", async () => {
+      const opts = {
+        modelArray: authors,
+        storeWhere: "posts" as const,
+        arrayPop: true as const,
+        mongooseModel: Post,
+        idField: "author" as const,
+        lean: true,
+      };
+      const authResult = await reversePopulate(opts);
+      assert.equal(authResult.length, 1);
+      idsMatch(authResult, authors);
+
+      const author = authResult[0];
+      assert.equal(author.posts.length, 5);
+
+      // Verify that posts are plain objects (lean documents)
+      author.posts.forEach((post) => {
+        // Lean documents should be plain objects without Mongoose document methods
+        assert.equal(post.constructor.name, "Object");
+        // Verify the post still has the expected properties
+        assert.notEqual(typeof post.title, "undefined");
+        assert.notEqual(typeof post.author, "undefined");
+        assert.notEqual(typeof post.content, "undefined");
+        // Check that it doesn't have Mongoose document methods
+        // @ts-expect-error These methods don't exist on the PostData interface but would on Mongoose documents
+        assert.equal(typeof post.save, "undefined");
+        // @ts-expect-error These methods don't exist on the PostData interface but would on Mongoose documents
+        assert.equal(typeof post.populate, "undefined");
+      });
+    });
+
+    it("should return Mongoose documents when lean option is false", async () => {
+      const opts = {
+        modelArray: authors,
+        storeWhere: "posts" as const,
+        arrayPop: true as const,
+        mongooseModel: Post,
+        idField: "author" as const,
+        lean: false,
+      };
+      const authResult = await reversePopulate(opts);
+      assert.equal(authResult.length, 1);
+      idsMatch(authResult, authors);
+
+      const author = authResult[0];
+      assert.equal(author.posts.length, 5);
+
+      // Verify that posts are Mongoose documents with methods
+      author.posts.forEach((post) => {
+        // Mongoose documents should have these methods
+        // @ts-expect-error PostData interface doesn't include Mongoose methods
+        assert.equal(typeof post.save, "function");
+        // @ts-expect-error PostData interface doesn't include Mongoose methods
+        assert.equal(typeof post.populate, "function");
+        // @ts-expect-error PostData interface doesn't include Mongoose methods
+        assert.equal(typeof post.toObject, "function");
+        // @ts-expect-error PostData interface doesn't include Mongoose methods
+        assert.equal(typeof post.toJSON, "function");
+        // Should not be a plain Object
+        assert.notEqual(post.constructor.name, "Object");
+        // Verify the post still has the expected properties
+        assert.notEqual(typeof post.title, "undefined");
+        assert.notEqual(typeof post.author, "undefined");
+        assert.notEqual(typeof post.content, "undefined");
+      });
+    });
+
+    // test comparison between lean true and false
+    it("should behave differently with lean true vs false", async () => {
+      // Get fresh author instances for each test to avoid interference
+      const authorsForLean = await Author.find();
+      const authorsForNonLean = await Author.find();
+
+      const optsLean = {
+        modelArray: authorsForLean,
+        storeWhere: "posts" as const,
+        arrayPop: true as const,
+        mongooseModel: Post,
+        idField: "author" as const,
+        lean: true,
+      };
+
+      const optsNonLean = {
+        modelArray: authorsForNonLean,
+        storeWhere: "posts" as const,
+        arrayPop: true as const,
+        mongooseModel: Post,
+        idField: "author" as const,
+        lean: false,
+      };
+
+      const leanResult = await reversePopulate(optsLean);
+      const nonLeanResult = await reversePopulate(optsNonLean);
+
+      const leanPost = leanResult[0].posts[0];
+      const nonLeanPost = nonLeanResult[0].posts[0];
+
+      // Data should be the same
+      assert.equal(leanPost.title, nonLeanPost.title);
+      assert.equal(leanPost.content, nonLeanPost.content);
+
+      // For lean documents
+      assert.equal(leanPost.constructor.name, "Object");
+      // @ts-expect-error PostData interface doesn't include Mongoose methods
+      assert.equal(typeof leanPost.save, "undefined");
+
+      // For non-lean documents - they should have Mongoose methods
+      // The specific constructor name might vary, but it should have methods
+      // @ts-expect-error PostData interface doesn't include Mongoose methods
+      const hasSaveMethod = typeof nonLeanPost.save === "function";
+      // @ts-expect-error PostData interface doesn't include Mongoose methods
+      const hasPopulateMethod = typeof nonLeanPost.populate === "function";
+
+      assert.equal(
+        hasSaveMethod,
+        true,
+        "Non-lean document should have save method",
+      );
+      assert.equal(
+        hasPopulateMethod,
+        true,
+        "Non-lean document should have populate method",
+      );
     });
   });
 
